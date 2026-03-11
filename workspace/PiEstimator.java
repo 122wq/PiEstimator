@@ -88,7 +88,7 @@ public class PiEstimator{
     		double randomX;
     		double randomY;
 
-    		while (true) {
+    		while (true && numTrials < Integer.MAX_VALUE) {
 				if (!clicked)
 				{
 					isReady = false;
@@ -106,7 +106,7 @@ public class PiEstimator{
 			
     		    SwingUtilities.invokeLater(() -> {
     		        value.setText("Estimated Pi: " + piEstimate);
-					trials.setText("Number of trials is " + numTrials);
+					trials.setText("Number of trials is: " + numTrials);
     		    });
     		}
 		}
