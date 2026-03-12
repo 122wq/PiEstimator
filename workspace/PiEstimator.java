@@ -31,7 +31,9 @@ public class PiEstimator{
 			{
 				clicked = true;
 				b.setText("Stop");
-				thread.setReady();
+				synchronized(thread){
+					thread.notify();
+				}
 			}
 			else
 			{
@@ -51,35 +53,24 @@ public class PiEstimator{
 	    f.setLayout(new GridLayout(4, 1));  
 		
 	    f.setVisible(true); 
+		long time = System.currentTimeMillis();
+		while(true){
+			if(System.currentTimeMillis()-time >2000){
+    		        value.setText("Estimated Pi: " + thread.piEstimate);
+					trials.setText("Number of trials is " + thread.numTrials);
+			}
+		}
 	}
 
   	
 
   	class PiThread extends Thread 
 	{
-		int numTrials;
+		volatile int numTrials;
 		int trialsPassed;
 		int inCircle;
 		double area;
-		boolean isReady = false;
-
-		
-      	synchronized void waitForReady(){
-      	    while(!isReady) {
-      	        try {
-					wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} // Wait until the object is ready
-      	    }
-      	    
-      	}
-
-      	synchronized void setReady() {
-			isReady = true;
-      	    notifyAll(); // Notify all waiting threads that the object is ready
-      	}
+		volatile double piEstimate;
 	
   	    public PiThread() {
 			numTrials = 0;
@@ -94,14 +85,19 @@ public class PiEstimator{
     		double randomY;
 
 			
-    		while (true && numTrials < Integer.MAX_VALUE) {
+    		while (numTrials < Integer.MAX_VALUE) {
 				//this will trigger after the text is change to "start" 
-				if (!clicked)
-				{
-					isReady = false;
-					//make sure only the pithread is waiting
-    		    	waitForReady();
-				}
+		
+				while(!clicked) {
+      	        try {
+					synchronized(this){
+						wait();
+					}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // Wait until the object is ready
+      	    }
 				numTrials++;
     		    randomX = Math.random();
     		    randomY = Math.random();
@@ -110,12 +106,8 @@ public class PiEstimator{
     		        inCircle++;
     		    }
 			
-    		    double piEstimate = (4.0 * inCircle) / (numTrials + 1);
+    		    piEstimate = (4.0 * inCircle) / (numTrials + 1);
 				//change the label's text
-    		    SwingUtilities.invokeLater(() -> {
-    		        value.setText("Estimated Pi: " + piEstimate);
-					trials.setText("Number of trials is " + numTrials);
-    		    });
     		}
 		}
 	}
