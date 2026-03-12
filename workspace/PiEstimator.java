@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -8,14 +7,17 @@ public class PiEstimator{
 //the following code is just to jog your memory about how labels and buttons work!
 //implement your Pi Es timator as described in the project. You may do it all in main below or you 
 //may implement additional functions if you feel it necessary.
+	//these varibles are needed for both the main and PiThread 
+	//if the button has been clicked (at the start assume it is)
 	boolean clicked;
+	//the calculated pi
 	JLabel value;
+	//number of trials calculated
 	JLabel trials;
 	public PiEstimator()
 	{
-		
 		clicked = true;
-		JFrame f=new JFrame("Button Example");  
+		JFrame f=new JFrame("Pi Calculation");  
 	    JButton b=new JButton("Stop");  
 		trials = new JLabel("Number of Trials is ");
 	    JLabel example = new JLabel("Actual Pi: " + Double.toString(Math.PI));
@@ -24,6 +26,7 @@ public class PiEstimator{
 		
 		b.addActionListener(e -> 
 		{
+			//if it was clicked when it was paused. set clicked to true and resume the thread
 			if(!clicked)
 			{
 				clicked = true;
@@ -32,6 +35,7 @@ public class PiEstimator{
 			}
 			else
 			{
+				//if the button was clicked when the pithread is running, make clicked false (trigger wait method in the thread) and change th text
 				clicked = false;
 				b.setText("Start");
 				
@@ -83,15 +87,19 @@ public class PiEstimator{
 			area = 0.0;
 			
   	    }
-	  
+		//precondtion: less than the 32bit interger value of trials has been run
+		//postcondtion: update the pi value calculated as well as number of trials
   	    public void run() {
     		double randomX;
     		double randomY;
 
+			
     		while (true && numTrials < Integer.MAX_VALUE) {
+				//this will trigger after the text is change to "start" 
 				if (!clicked)
 				{
 					isReady = false;
+					//make sure only the pithread is waiting
     		    	waitForReady();
 				}
 				numTrials++;
@@ -103,10 +111,10 @@ public class PiEstimator{
     		    }
 			
     		    double piEstimate = (4.0 * inCircle) / (numTrials + 1);
-			
+				//change the label's text
     		    SwingUtilities.invokeLater(() -> {
     		        value.setText("Estimated Pi: " + piEstimate);
-					trials.setText("Number of trials is: " + numTrials);
+					trials.setText("Number of trials is " + numTrials);
     		    });
     		}
 		}
