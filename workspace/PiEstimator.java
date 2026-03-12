@@ -21,7 +21,7 @@ public class PiEstimator{
 	    JButton b=new JButton("Stop");  
 		trials = new JLabel("Number of Trials is ");
 	    JLabel example = new JLabel("Actual Pi: " + Double.toString(Math.PI));
-		PiThread thread = new PiThread(47000000);
+		PiThread thread = new PiThread();
 		thread.start();
 		
 		b.addActionListener(e -> 
@@ -81,7 +81,7 @@ public class PiEstimator{
       	    notifyAll(); // Notify all waiting threads that the object is ready
       	}
 	
-  	    public PiThread(int trials) {
+  	    public PiThread() {
 			numTrials = 0;
 			inCircle = 0;
 			area = 0.0;
