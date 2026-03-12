@@ -85,7 +85,7 @@ public class PiEstimator{
     		double randomY;
 
 			
-    		while (numTrials < Integer.MAX_VALUE) {
+    		while (numTrials < Integer.MAX_VALUE - 1) {
 				//this will trigger after the text is change to "start" 
 		
 				while(!clicked) {
